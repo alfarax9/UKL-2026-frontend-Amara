@@ -44,7 +44,14 @@ export function MenuManageView() {
       qc.invalidateQueries({ queryKey: ["admin", "menus"] });
       qc.invalidateQueries({ queryKey: ["menus"] });
     },
-    onError: () => toast("Gagal menghapus menu", "error"),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message || "Gagal menghapus menu";
+      toast(
+        Array.isArray(msg) ? msg[0] : msg,
+        "error"
+      );
+    },
   });
 
   const rows = menus.data?.data ?? [];
