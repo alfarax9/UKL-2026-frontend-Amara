@@ -86,11 +86,10 @@ export function GoogleAuthButton() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full [&>div]:!w-full">
       <GoogleLogin
         onSuccess={handleSuccess}
         onError={() => toast("Google login gagal", "error")}
-        width="400"
         logo_alignment="center"
         text="continue_with"
         shape="rectangular"

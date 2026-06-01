@@ -18,7 +18,7 @@ export function Toaster() {
         unstyled: true,
         classNames: {
           toast:
-            "flex items-center gap-3 w-[356px] rounded-xl px-4 py-3.5 text-sm font-medium shadow-[0px_8px_24px_rgba(40,65,57,0.25)] backdrop-blur-sm",
+            "flex items-center gap-3 w-full max-w-[356px] rounded-xl px-4 py-3.5 text-sm font-medium shadow-[0px_8px_24px_rgba(40,65,57,0.25)] backdrop-blur-sm",
           success: "bg-white text-ink border border-line/40",
           error: "bg-white text-ink border border-red-200",
           title: "text-sm font-medium",

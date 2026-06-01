@@ -1,5 +1,6 @@
 import { ProtectedRoute } from "@/features/auth/guards/ProtectedRoute";
-import { AdminSidebar } from "@/components/layout/AdminSidebar";
+import { SidebarProvider } from "@/features/admin/SidebarContext";
+import { AdminShell } from "@/features/admin/AdminShell";
 
 export default function AdminLayout({
   children,
@@ -8,10 +9,9 @@ export default function AdminLayout({
 }) {
   return (
     <ProtectedRoute role="ADMIN">
-      <div className="min-h-screen bg-paper">
-        <AdminSidebar />
-        <div className="md:pl-64">{children}</div>
-      </div>
+      <SidebarProvider>
+        <AdminShell>{children}</AdminShell>
+      </SidebarProvider>
     </ProtectedRoute>
   );
 }

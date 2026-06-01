@@ -17,7 +17,6 @@ const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 const API_KEY = process.env.CLOUDINARY_API_KEY;
 const API_SECRET = process.env.CLOUDINARY_API_SECRET;
 
-/** Cloudinary signed-upload signature (SHA-1). */
 function makeSignature(params: Record<string, string>): string {
   const sorted = Object.keys(params)
     .sort()
@@ -29,7 +28,6 @@ function makeSignature(params: Record<string, string>): string {
 }
 
 export async function POST(req: NextRequest) {
-  // ── Guard ───────────────────────────────────────────────────────────────────
   if (!CLOUD_NAME || !API_KEY || !API_SECRET) {
     return NextResponse.json(
       { error: "Cloudinary belum dikonfigurasi di server." },
@@ -37,7 +35,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // ── Parse multipart body ───────────────────────────────────────────────────
   let formData: FormData;
   try {
     formData = await req.formData();
@@ -50,12 +47,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "File tidak ditemukan." }, { status: 400 });
   }
 
-  // Batasi ukuran file (5 MB)
   if (file.size > 5 * 1024 * 1024) {
     return NextResponse.json({ error: "Ukuran file maks 5 MB." }, { status: 400 });
   }
 
-  // Batasi tipe file
   const allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];
   if (!allowed.includes(file.type)) {
     return NextResponse.json(
@@ -64,7 +59,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // ── Buat signed upload ────────────────────────────────────────────────────
+
   const folder = (formData.get("folder") as string | null) ?? "amara";
   const timestamp = String(Math.floor(Date.now() / 1000));
 
@@ -73,8 +68,6 @@ export async function POST(req: NextRequest) {
     timestamp,
   };
   const signature = makeSignature(sigParams);
-
-  // ── Upload ke Cloudinary ──────────────────────────────────────────────────
   const cldForm = new FormData();
   cldForm.append("file", file);
   cldForm.append("api_key", API_KEY);

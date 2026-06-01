@@ -134,14 +134,14 @@ function OrderCard({ order }: { order: SavedOrder }) {
       </ul>
 
       {/* Footer */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <span className="text-[16px] text-body">Total Pesanan</span>
           <span className="font-serif text-xl text-ink">
             {formatRupiah(order.total)}
           </span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Link
             href={`/order/${order.id}`}
             className="rounded-lg border border-primary px-5 py-2.5 text-sm font-semibold tracking-[0.28px] text-primary hover:bg-primary/5"
