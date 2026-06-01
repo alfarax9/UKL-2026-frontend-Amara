@@ -51,14 +51,22 @@ export function AdminSidebar({
         )}
       >
         <div className="flex items-center justify-between px-3">
-          <div>
-            <span className="font-serif text-3xl font-bold tracking-[-0.5px]">
+          <Link href="/admin/dashboard" onClick={onClose} className="group">
+            <span className="font-serif text-3xl font-bold tracking-[-0.5px] transition-colors group-hover:text-gold">
               AMARA
             </span>
             <p className="label-eyebrow mt-1 text-[10px] uppercase text-white/50">
               Fine Dining Admin
             </p>
-          </div>
+            <div className="mt-2 flex items-center gap-1.5">
+              <span className="rounded-full bg-white/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white/60">
+                v1.0.0
+              </span>
+              <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-emerald-400">
+                Development
+              </span>
+            </div>
+          </Link>
           {/* Close button — mobile only */}
           <button
             type="button"
