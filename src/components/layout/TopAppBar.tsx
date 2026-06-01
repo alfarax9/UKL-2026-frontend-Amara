@@ -4,9 +4,6 @@ import { HeaderActions } from "./HeaderActions";
 
 const NAV_LINKS = [
   { label: "Menu", href: "/menu" },
-  { label: "Reservations", href: "/reservations" },
-  { label: "Experience", href: "/experience" },
-  { label: "Private Dining", href: "/private-dining" },
 ];
 
 export function TopAppBar({
@@ -32,19 +29,23 @@ export function TopAppBar({
           Amara
         </Link>
 
-        <nav className="hidden items-center gap-6 lg:flex">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className="text-sm font-semibold tracking-[0.28px] text-body transition-colors hover:text-primary"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        <div className="flex items-center gap-4 sm:gap-6">
+          <nav className="hidden items-center md:flex">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="text-sm font-semibold tracking-[0.28px] text-body transition-colors hover:text-primary"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          
+          <div className="hidden h-5 w-px bg-line md:block" aria-hidden />
 
-        <HeaderActions />
+          <HeaderActions />
+        </div>
       </div>
     </header>
   );
