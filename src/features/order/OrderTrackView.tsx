@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { Check, Clock, ChefHat, CircleCheck, XCircle, ArrowLeft } from "lucide-react";
+import { Check, Clock, ChefHat, CircleCheck, XCircle, ArrowLeft, FileDown } from "lucide-react";
 import { orderService } from "@/lib/api/order.service";
+import { exportSingleOrderBillPdf } from "@/lib/exportPdf";
 import { orderCode } from "@/features/order/history";
 import { formatRupiah, cn } from "@/lib/utils";
 import type { OrderStatus } from "@/types/api.types";
@@ -48,15 +49,27 @@ export function OrderTrackView({ orderId }: { orderId: string }) {
       </Link>
 
       <div className="rounded-2xl border border-line/40 bg-white p-6 md:p-10">
-        <p className="label-eyebrow text-xs uppercase text-muted">
-          {orderCode(data.id)}
-        </p>
-        <h1 className="mt-1 font-serif text-3xl font-bold tracking-[-0.5px] text-ink">
-          Lacak Pesanan
-        </h1>
-        <p className="mt-1 text-body">
-          {data.customerName} • Meja {data.tableNumber}
-        </p>
+        <div className="flex flex-col justify-between gap-4 border-b border-line/10 pb-6 sm:flex-row sm:items-start">
+          <div>
+            <p className="label-eyebrow text-xs uppercase text-muted">
+              {orderCode(data.id)}
+            </p>
+            <h1 className="mt-1 font-serif text-3xl font-bold tracking-[-0.5px] text-ink">
+              Lacak Pesanan
+            </h1>
+            <p className="mt-1 text-body">
+              {data.customerName} • Meja {data.tableNumber}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => exportSingleOrderBillPdf(data)}
+            className="inline-flex items-center gap-2 rounded-lg border border-primary px-5 py-2.5 text-sm font-semibold tracking-[0.28px] text-primary hover:bg-primary/5 self-start"
+          >
+            <FileDown size={14} />
+            Cetak Bill
+          </button>
+        </div>
 
         {/* Timeline */}
         {cancelled ? (

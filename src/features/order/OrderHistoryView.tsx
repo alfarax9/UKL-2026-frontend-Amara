@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Clock, RotateCcw, Receipt } from "lucide-react";
+import { CheckCircle2, Clock, RotateCcw, Receipt, FileDown } from "lucide-react";
+import { exportSingleOrderBillPdf } from "@/lib/exportPdf";
 import {
   useOrderHistory,
   orderCode,
@@ -142,6 +143,14 @@ function OrderCard({ order }: { order: SavedOrder }) {
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => exportSingleOrderBillPdf(order)}
+            className="inline-flex items-center gap-2 rounded-lg border border-line px-5 py-2.5 text-sm font-semibold tracking-[0.28px] text-body hover:bg-black/5"
+          >
+            <FileDown size={14} />
+            Cetak Bill
+          </button>
           <Link
             href={`/order/${order.id}`}
             className="rounded-lg border border-primary px-5 py-2.5 text-sm font-semibold tracking-[0.28px] text-primary hover:bg-primary/5"

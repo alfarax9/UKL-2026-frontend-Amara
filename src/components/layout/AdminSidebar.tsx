@@ -15,7 +15,7 @@ import {
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { orderService } from "@/lib/api/order.service";
-import { exportMonthlySummaryPdf } from "@/lib/exportPdf";
+import { exportMonthlySummaryPdf, exportMonthlyOrdersListPdf } from "@/lib/exportPdf";
 import { toast } from "@/lib/toast";
 import type { Order } from "@/types/api.types";
 
@@ -42,6 +42,7 @@ export function AdminSidebar({
   const [showExport, setShowExport] = useState(false);
   const [exportMonth, setExportMonth] = useState(new Date().getMonth());
   const [exportYear, setExportYear] = useState(new Date().getFullYear());
+  const [exportType, setExportType] = useState<"summary" | "orders">("summary");
   const [exporting, setExporting] = useState(false);
 
   const handleExport = async () => {
@@ -72,7 +73,11 @@ export function AdminSidebar({
         return;
       }
 
-      exportMonthlySummaryPdf(allOrders, exportMonth, exportYear);
+      if (exportType === "summary") {
+        exportMonthlySummaryPdf(allOrders, exportMonth, exportYear);
+      } else {
+        exportMonthlyOrdersListPdf(allOrders, exportMonth, exportYear);
+      }
       setShowExport(false);
     } catch (err) {
       console.error("Export PDF failed:", err);
@@ -197,6 +202,21 @@ export function AdminSidebar({
                 </div>
               </div>
 
+              {/* Report Type Selector */}
+              <div className="mb-4">
+                <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-muted">
+                  Jenis Laporan
+                </label>
+                <select
+                  value={exportType}
+                  onChange={(e) => setExportType(e.target.value as "summary" | "orders")}
+                  className="w-full rounded-lg border border-line bg-paper px-3 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
+                >
+                  <option value="summary">Ringkasan Menu Terjual (Summary)</option>
+                  <option value="orders">Daftar Transaksi Pesanan (Bill Bulanan)</option>
+                </select>
+              </div>
+
               {/* Month & Year Selector */}
               <div className="flex gap-3">
                 <div className="flex-1">
@@ -238,12 +258,23 @@ export function AdminSidebar({
               {/* Info */}
               <div className="mt-4 rounded-lg bg-paper p-3">
                 <p className="text-xs text-muted">
-                  📄 Laporan akan mencakup: total penjualan tiap menu, omset kotor, pajak
-                  restoran (10%), dan omset bersih untuk periode{" "}
-                  <span className="font-semibold text-ink">
-                    {MONTH_NAMES[exportMonth]} {exportYear}
-                  </span>
-                  .
+                  {exportType === "summary" ? (
+                    <>
+                      📄 Laporan akan mencakup: total penjualan tiap menu, omset kotor, pajak
+                      restoran (10%), dan omset bersih untuk periode{" "}
+                      <span className="font-semibold text-ink">
+                        {MONTH_NAMES[exportMonth]} {exportYear}
+                      </span>.
+                    </>
+                  ) : (
+                    <>
+                      📄 Laporan akan mencakup: daftar seluruh transaksi pesanan selesai,
+                      nomor meja, nama pelanggan, omset kotor, pajak restoran (10%), dan omset bersih untuk periode{" "}
+                      <span className="font-semibold text-ink">
+                        {MONTH_NAMES[exportMonth]} {exportYear}
+                      </span>.
+                    </>
+                  )}
                 </p>
               </div>
 

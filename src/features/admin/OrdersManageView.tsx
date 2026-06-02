@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Search, X, ChevronLeft, ChevronRight, Loader2, FileDown } from "lucide-react";
 import { orderService } from "@/lib/api/order.service";
+import { exportSingleOrderBillPdf } from "@/lib/exportPdf";
 import { AdminTopBar } from "@/components/layout/AdminTopBar";
 import { ORDER_STATUS, ALL_STATUSES } from "./orderStatus";
 import { formatRupiah, cn } from "@/lib/utils";
@@ -268,6 +269,14 @@ function OrderDrawer({
 
         {/* Actions */}
         <div className="space-y-3 border-t border-line p-5">
+          <button
+            type="button"
+            onClick={() => exportSingleOrderBillPdf(order)}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-primary py-3 text-sm font-semibold text-primary hover:bg-primary/5"
+          >
+            <FileDown size={16} />
+            Cetak Bill (PDF)
+          </button>
           {next && (
             <button
               type="button"
