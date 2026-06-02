@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { CircleUser, ChevronDown, LogOut, LayoutDashboard, ShoppingBag } from "lucide-react";
+import { CircleUser, ChevronDown, LogOut, LayoutDashboard, ReceiptText } from "lucide-react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { CartIcon } from "./CartIcon";
 
@@ -18,7 +18,7 @@ export function HeaderActions() {
   const firstName = user?.name?.split(" ")[0] ?? "Akun";
 
   return (
-    <div className="flex items-center gap-2 sm:gap-3">
+    <div className="flex items-center gap-1 sm:gap-3">
       <Link
         href="/menu"
         className="hidden rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold tracking-[0.28px] text-white transition-colors hover:bg-primary/90 sm:inline-flex"
@@ -26,6 +26,14 @@ export function HeaderActions() {
         Lihat Menu
       </Link>
       
+      <Link
+        href="/orders"
+        className="flex items-center justify-center rounded-full p-2 text-primary transition-colors hover:bg-primary/5"
+        title="Pesanan Saya"
+      >
+        <ReceiptText size={22} />
+      </Link>
+
       <CartIcon />
 
       {!user ? (
@@ -103,11 +111,6 @@ export function HeaderActions() {
                 Dashboard Admin
               </MenuItem>
             )}
-
-            <MenuItem href="/orders" onClick={() => setOpen(false)}>
-              <ShoppingBag size={18} />
-              Pesanan Saya
-            </MenuItem>
 
             <button
               type="button"
