@@ -24,7 +24,7 @@ export function AdminTopBar({ title }: { title: string }) {
           {title}
         </h1>
       </div>
-      
+
       <div className="flex items-center gap-2 sm:gap-4">
         {/* Profile Pill */}
         <div className="flex items-center gap-3 rounded-full border border-line/60 bg-paper px-2 py-1.5 shadow-sm transition-colors hover:border-line">
@@ -42,8 +42,6 @@ export function AdminTopBar({ title }: { title: string }) {
         </div>
 
         <div className="hidden h-6 w-px bg-line sm:block" aria-hidden />
-
-        {/* Logout Button */}
         <button
           type="button"
           onClick={logout}
