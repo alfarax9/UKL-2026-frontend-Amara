@@ -71,7 +71,7 @@ export function LoginForm() {
       <Button
         type="submit"
         variant="maroon"
-        size="lg"
+        size="md"
         fullWidth
         disabled={isSubmitting}
       >

@@ -15,32 +15,28 @@ export function HeaderActions() {
     return <div className="h-10 w-24" aria-hidden />;
   }
 
-  if (!user) {
-    return (
-      <div className="flex items-center gap-2 sm:gap-3">
-        <CartIcon />
+  const firstName = user?.name?.split(" ")[0] ?? "Akun";
+
+  return (
+    <div className="flex items-center gap-2 sm:gap-3">
+      <Link
+        href="/menu"
+        className="hidden rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold tracking-[0.28px] text-white transition-colors hover:bg-primary/90 sm:inline-flex"
+      >
+        Lihat Menu
+      </Link>
+      
+      <CartIcon />
+
+      {!user ? (
         <Link
           href="/login"
           className="rounded-lg border border-line px-5 py-2.5 text-sm font-semibold tracking-[0.28px] text-primary transition-colors hover:bg-primary/5"
         >
           Masuk
         </Link>
-        <Link
-          href="/menu"
-          className="hidden rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold tracking-[0.28px] text-white transition-colors hover:bg-primary/90 sm:inline-flex"
-        >
-          Reserve Now
-        </Link>
-      </div>
-    );
-  }
-
-  const firstName = user.name?.split(" ")[0] ?? "Akun";
-
-  return (
-    <div className="flex items-center gap-2 sm:gap-3">
-      <CartIcon />
-      <div className="relative">
+      ) : (
+        <div className="relative">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -129,6 +125,7 @@ export function HeaderActions() {
         </>
       )}
       </div>
+      )}
     </div>
   );
 }

@@ -31,15 +31,7 @@ export function TopAppBar({
 
         <div className="flex items-center gap-4 sm:gap-6">
           <nav className="hidden items-center md:flex">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="text-sm font-semibold tracking-[0.28px] text-body transition-colors hover:text-primary"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {/* The central menu links have been moved to HeaderActions */}
           </nav>
           
           <div className="hidden h-5 w-px bg-line md:block" aria-hidden />

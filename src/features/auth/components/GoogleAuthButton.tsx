@@ -6,6 +6,7 @@ import { setToken, GOOGLE_SESSION_KEY } from "@/lib/api/client";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "@/lib/toast";
 import { env } from "@/config/env";
+import { Button } from "@/components/ui/Button";
 
 /**
  * Google Sign-In button.
@@ -26,15 +27,18 @@ export function GoogleAuthButton() {
 
   if (!enabled) {
     return (
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="md"
+        fullWidth
         disabled
         title="Google login belum dikonfigurasi"
-        className="flex w-full items-center justify-center gap-3 rounded-lg border border-line bg-white py-3 text-sm font-medium text-muted"
+        className="gap-3"
       >
         <GoogleGlyph />
         Lanjutkan dengan Google
-      </button>
+      </Button>
     );
   }
 
