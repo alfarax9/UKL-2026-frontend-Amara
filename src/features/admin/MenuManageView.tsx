@@ -253,8 +253,17 @@ function MenuFormModal({
 
       toast(menu ? "Menu diperbarui" : "Menu ditambahkan");
       onSaved();
-    } catch {
-      toast("Gagal menyimpan menu", "error");
+    } catch (err: any) {
+      const msg = err?.response?.data?.message;
+      const isDuplicate = Array.isArray(msg)
+        ? msg.some((m) => typeof m === "string" && (m.toLowerCase().includes("already exists") || m.toLowerCase().includes("sudah ada") || m.toLowerCase().includes("duplicate")))
+        : typeof msg === "string" && (msg.toLowerCase().includes("already exists") || msg.toLowerCase().includes("sudah ada") || msg.toLowerCase().includes("duplicate"));
+
+      if (isDuplicate) {
+        toast("menu sudah ada", "error");
+      } else {
+        toast(typeof msg === "string" ? msg : "Gagal menyimpan menu", "error");
+      }
       setSaving(false);
     }
   };
