@@ -6,4 +6,4 @@ nixPkgs = ["nodejs", "npm"]
 cmds = ["npm install"]
 
 [phases.build]
-cmds = ["npm run build"]
+cmds = ["rm -rf .next", "npm run build"]
