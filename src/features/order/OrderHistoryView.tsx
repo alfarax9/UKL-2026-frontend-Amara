@@ -1,9 +1,17 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Clock, RotateCcw, Receipt, FileDown } from "lucide-react";
-import { exportSingleOrderBillPdf } from "@/lib/exportPdf";
+import {
+  CheckCircle2,
+  Clock,
+  RotateCcw,
+  Receipt,
+  ClipboardList,
+  ChevronDown,
+} from "lucide-react";
+import { exportUserBillsByDays } from "@/lib/exportPdf";
 import {
   useOrderHistory,
   orderCode,
@@ -26,6 +34,12 @@ const STATUS: Record<
   CANCELLED: { label: "Dibatalkan", className: "bg-red-100 text-red-600", icon: Clock },
 };
 
+const PERIOD_OPTIONS = [
+  { days: 1, label: "1 Hari Terakhir" },
+  { days: 15, label: "15 Hari Terakhir" },
+  { days: 30, label: "30 Hari Terakhir" },
+];
+
 const dateFmt = (iso: string) =>
   new Date(iso).toLocaleDateString("id-ID", {
     day: "numeric",
@@ -41,11 +55,15 @@ export function OrderHistoryView() {
 
   return (
     <div className="mx-auto max-w-[1000px] px-5 py-12 md:px-10">
-      <div className="flex flex-col items-start justify-between gap-2 border-b border-footer pb-6 sm:flex-row sm:items-baseline">
-        <h1 className="font-serif text-3xl font-bold tracking-[-0.64px] text-primary">
-          Riwayat Pesanan
-        </h1>
-        <p className="text-lg text-body">Menelusuri kenangan kuliner Anda</p>
+      <div className="flex flex-col items-start justify-between gap-4 border-b border-footer pb-6 sm:flex-row sm:items-center">
+        <div>
+          <h1 className="font-serif text-3xl font-bold tracking-[-0.64px] text-primary">
+            Riwayat Pesanan
+          </h1>
+          <p className="text-lg text-body">Menelusuri kenangan kuliner Anda</p>
+        </div>
+
+        {orders.length > 0 && <DownloadDropdown orders={orders} />}
       </div>
 
       {orders.length === 0 ? (
@@ -72,6 +90,77 @@ export function OrderHistoryView() {
     </div>
   );
 }
+
+/* ── Download Dropdown ─────────────────────────────────────────────────────── */
+
+function DownloadDropdown({ orders }: { orders: SavedOrder[] }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  const handleDownload = (days: number) => {
+    setOpen(false);
+    exportUserBillsByDays(orders, days);
+  };
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="inline-flex items-center gap-2 rounded-lg border border-primary bg-white px-4 py-2.5 text-sm font-semibold tracking-[0.28px] text-primary shadow-sm transition-colors hover:bg-primary/5"
+        aria-haspopup="menu"
+        aria-expanded={open}
+      >
+        <ClipboardList size={16} />
+        <span className="hidden sm:inline">Download Riwayat</span>
+        <span className="sm:hidden">Download</span>
+        <ChevronDown
+          size={14}
+          className={cn("transition-transform", open && "rotate-180")}
+        />
+      </button>
+
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-line bg-white py-1 shadow-[0px_8px_24px_rgba(40,65,57,0.15)]"
+        >
+          <div className="border-b border-line px-4 py-2.5">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-muted">
+              Pilih Periode
+            </p>
+          </div>
+          {PERIOD_OPTIONS.map(({ days, label }) => (
+            <button
+              key={days}
+              type="button"
+              role="menuitem"
+              onClick={() => handleDownload(days)}
+              className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-ink transition-colors hover:bg-primary/5"
+            >
+              <ClipboardList size={16} className="shrink-0 text-primary" />
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Order Card ────────────────────────────────────────────────────────────── */
 
 function OrderCard({ order }: { order: SavedOrder }) {
   const router = useRouter();
@@ -143,14 +232,6 @@ function OrderCard({ order }: { order: SavedOrder }) {
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={() => exportSingleOrderBillPdf(order)}
-            className="inline-flex items-center gap-2 rounded-lg border border-line px-5 py-2.5 text-sm font-semibold tracking-[0.28px] text-body hover:bg-black/5"
-          >
-            <FileDown size={14} />
-            Cetak Bill
-          </button>
           <Link
             href={`/order/${order.id}`}
             className="rounded-lg border border-primary px-5 py-2.5 text-sm font-semibold tracking-[0.28px] text-primary hover:bg-primary/5"

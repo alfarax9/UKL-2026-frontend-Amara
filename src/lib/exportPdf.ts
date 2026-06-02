@@ -494,6 +494,40 @@ export function exportAllMonthlyBillsPdf(orders: Order[], month: number, year: n
 }
 
 /**
+ * Generate and download batch bills for user orders within the last N days.
+ * Accepts SavedOrder[] from the client-side Zustand store.
+ */
+export function exportUserBillsByDays(orders: any[], days: number) {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  cutoff.setHours(0, 0, 0, 0);
+
+  const filtered = orders.filter((o: any) => {
+    if (!o.createdAt) return false;
+    return new Date(o.createdAt) >= cutoff;
+  });
+
+  if (filtered.length === 0) {
+    toast(`Tidak ada pesanan dalam ${days} hari terakhir.`, "error");
+    return;
+  }
+
+  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+  filtered.forEach((order: any, idx: number) => {
+    if (idx > 0) {
+      doc.addPage();
+    }
+    drawOrderBillPage(doc, order, idx, filtered.length);
+  });
+
+  const label = days === 1 ? "1_Hari" : `${days}_Hari`;
+  const filename = `Amara_Riwayat_Transaksi_${label}_Terakhir.pdf`;
+  doc.save(filename);
+  toast(`Berhasil mengunduh ${filtered.length} struk untuk ${days} hari terakhir.`);
+}
+
+/**
  * Generate and download a list of monthly transactions/orders in PDF format.
  */
 export function exportMonthlyOrdersListPdf(orders: Order[], month: number, year: number) {
