@@ -16,6 +16,7 @@ import { useAuth } from "@/features/auth/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { orderService } from "@/lib/api/order.service";
 import { exportMonthlySummaryPdf } from "@/lib/exportPdf";
+import { toast } from "@/lib/toast";
 import type { Order } from "@/types/api.types";
 
 const NAV = [
@@ -46,23 +47,36 @@ export function AdminSidebar({
   const handleExport = async () => {
     setExporting(true);
     try {
-      // Fetch ALL completed orders (paginate through all pages)
+      // Fetch ONLY completed orders (paginate through all pages)
       const allOrders: Order[] = [];
       let page = 1;
       let hasMore = true;
 
       while (hasMore) {
-        const result = await orderService.list({ page, limit: 100 });
+        const result = await orderService.list({ page, limit: 100, status: "COMPLETED" });
         allOrders.push(...result.data);
         hasMore = result.meta.hasNextPage;
         page++;
+      }
+
+      // Filter by selected month and year
+      const filtered = allOrders.filter((o) => {
+        if (!o.createdAt) return false;
+        const d = new Date(o.createdAt);
+        return d.getMonth() === exportMonth && d.getFullYear() === exportYear;
+      });
+
+      // Validation: Check if there is data to export
+      if (filtered.length === 0) {
+        toast(`Tidak ada data penjualan selesai (COMPLETED) untuk periode ${MONTH_NAMES[exportMonth]} ${exportYear}.`, "error");
+        return;
       }
 
       exportMonthlySummaryPdf(allOrders, exportMonth, exportYear);
       setShowExport(false);
     } catch (err) {
       console.error("Export PDF failed:", err);
-      alert("Gagal mengekspor PDF. Pastikan Anda memiliki akses ke data pesanan.");
+      toast("Gagal mengekspor PDF. Pastikan Anda memiliki akses ke data pesanan.", "error");
     } finally {
       setExporting(false);
     }
