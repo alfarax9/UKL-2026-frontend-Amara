@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
     const apiBase =
       process.env.NEXT_PUBLIC_API_BASE_URL ??
-      "https://amara-development.up.railway.app";
+      "https://amaradevelopment.up.railway.app";
 
     try {
       const amaraRes = await fetch(`${apiBase}/api/auth/google`, {
