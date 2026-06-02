@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { authService } from "@/lib/api/auth.service";
 import { getToken, GOOGLE_SESSION_KEY } from "@/lib/api/client";
 import type { User, LoginDto, RegisterDto } from "@/types/api.types";
+import { useOrderHistory } from "@/features/order/history";
 
 interface AuthState {
   user: User | null;
@@ -73,6 +74,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (dto: LoginDto) => {
     await authService.login(dto);
+    // Clear local guest order history on login
+    useOrderHistory.getState().clearOrders();
     await refresh();
   };
 
@@ -86,6 +89,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== "undefined") {
       localStorage.removeItem(GOOGLE_SESSION_KEY);
     }
+    // Clear local guest order history on logout
+    useOrderHistory.getState().clearOrders();
     setUser(null);
     router.push("/login");
   };

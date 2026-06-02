@@ -64,6 +64,7 @@ export interface Order {
   orderItems?: OrderItemResponse[];
   createdAt?: string;
   updatedAt?: string;
+  paymentMethod?: string;
 }
 
 /** Pagination metadata returned by the Amara API (verified live). */

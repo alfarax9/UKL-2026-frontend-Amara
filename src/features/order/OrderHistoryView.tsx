@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import {
   CheckCircle2,
   Clock,
@@ -10,6 +11,7 @@ import {
   Receipt,
   ClipboardList,
   ChevronDown,
+  Loader2,
 } from "lucide-react";
 import { exportUserBillsByDays } from "@/lib/exportPdf";
 import {
@@ -21,6 +23,8 @@ import { useCart } from "@/features/cart/store";
 import { MenuImage } from "@/components/shared/MenuImage";
 import { useHasMounted, formatRupiah, cn } from "@/lib/utils";
 import { toast } from "@/lib/toast";
+import { useAuth } from "@/features/auth/context/AuthContext";
+import { orderService } from "@/lib/api/order.service";
 import type { OrderStatus } from "@/types/api.types";
 
 const STATUS: Record<
@@ -47,11 +51,50 @@ const dateFmt = (iso: string) =>
     year: "numeric",
   });
 
+const normalizeOrder = (order: any): SavedOrder => {
+  if (order.items) {
+    return order as SavedOrder;
+  }
+  return {
+    id: order.id,
+    createdAt: order.createdAt || new Date().toISOString(),
+    customerName: order.customerName,
+    tableNumber: order.tableNumber,
+    notes: order.notes || undefined,
+    items: (order.orderItems || []).map((it: any) => ({
+      menuId: it.menuId,
+      name: it.menu?.name || "Menu",
+      quantity: it.quantity,
+      price: Number(it.price || 0),
+      imageUrl: it.menu?.imageUrl || undefined,
+    })),
+    total: Number(order.totalPrice || 0),
+    paymentMethod: order.paymentMethod || "qris",
+    status: order.status,
+  };
+};
+
 export function OrderHistoryView() {
   const mounted = useHasMounted();
-  const orders = useOrderHistory((s) => s.orders);
+  const { isAuthenticated, user } = useAuth();
+
+  // 1. Fetch orders from database if logged in
+  const { data: apiOrders, isLoading: isApiLoading } = useQuery({
+    queryKey: ["user-orders", user?.id],
+    queryFn: () => orderService.list({ page: 1, limit: 100 }),
+    enabled: isAuthenticated && !!user,
+  });
+
+  // 2. Read local guest orders if not logged in
+  const localOrders = useOrderHistory((s) => s.orders);
 
   if (!mounted) return <div className="min-h-[60vh]" />;
+
+  const displayOrders = isAuthenticated
+    ? (apiOrders?.data ?? []).map(normalizeOrder)
+    : localOrders;
+
+  const isLoading = isAuthenticated ? isApiLoading : false;
 
   return (
     <div className="mx-auto max-w-[1000px] px-5 py-12 md:px-10">
@@ -63,10 +106,17 @@ export function OrderHistoryView() {
           <p className="text-lg text-body">Menelusuri kenangan kuliner Anda</p>
         </div>
 
-        {orders.length > 0 && <DownloadDropdown orders={orders} />}
+        {!isLoading && displayOrders.length > 0 && (
+          <DownloadDropdown orders={displayOrders} />
+        )}
       </div>
 
-      {orders.length === 0 ? (
+      {isLoading ? (
+        <div className="flex min-h-[400px] flex-col items-center justify-center gap-4">
+          <Loader2 className="animate-spin text-primary" size={40} />
+          <p className="text-sm text-body">Memuat riwayat pesanan Anda…</p>
+        </div>
+      ) : displayOrders.length === 0 ? (
         <div className="flex flex-col items-center gap-4 py-20 text-center">
           <Receipt size={40} className="text-secondary" />
           <p className="font-serif text-2xl text-ink">Belum ada pesanan</p>
@@ -82,7 +132,7 @@ export function OrderHistoryView() {
         </div>
       ) : (
         <div className="mt-10 flex flex-col gap-10">
-          {orders.map((order) => (
+          {displayOrders.map((order) => (
             <OrderCard key={order.id} order={order} />
           ))}
         </div>

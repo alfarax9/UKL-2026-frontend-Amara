@@ -31,6 +31,7 @@ interface HistoryState {
   addOrder: (order: SavedOrder) => void;
   markPaid: (id: string) => void;
   getOrder: (id: string) => SavedOrder | undefined;
+  clearOrders: () => void;
 }
 
 export const useOrderHistory = create<HistoryState>()(
@@ -46,6 +47,7 @@ export const useOrderHistory = create<HistoryState>()(
           ),
         })),
       getOrder: (id) => get().orders.find((o) => o.id === id),
+      clearOrders: () => set({ orders: [] }),
     }),
     { name: "amara_order_history" },
   ),
