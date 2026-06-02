@@ -41,7 +41,7 @@ export function LandingFooter() {
         </div>
       </div>
 
-      <div className="border-t border-white/10 py-4 text-center text-[15px] text-white/60">
+      <div className="border-t border-white/10 pb-24 pt-4 text-center text-[15px] text-white/60 md:pb-4">
         © 2024 AMARA Saffron Fine Dining. All rights reserved.
       </div>
     </footer>

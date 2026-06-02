@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Leaf, Flame, Sparkles } from "lucide-react";
 import { TopAppBar } from "@/components/layout/TopAppBar";
 import { LandingFooter } from "@/components/layout/LandingFooter";
+import { BottomNav } from "@/components/layout/BottomNav";
 import { FeaturedMenu } from "@/features/menu/components/FeaturedMenu";
 
 const EXPERIENCE = [
@@ -107,6 +108,7 @@ export default function LandingPage() {
       </section>
 
       <LandingFooter />
+      <BottomNav />
     </>
   );
 }
