@@ -34,7 +34,7 @@ export function ResetPasswordForm() {
 
     setLoading(true);
     try {
-      await authService.resetPassword(token, newPassword);
+      await authService.resetPassword({ token, newPassword });
       toast("Password berhasil diubah. Silakan masuk kembali.");
       router.push("/login");
     } catch (error: any) {

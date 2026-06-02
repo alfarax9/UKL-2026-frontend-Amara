@@ -16,7 +16,7 @@ export function ForgotPasswordForm() {
 
     setLoading(true);
     try {
-      await authService.forgotPassword(email);
+      await authService.forgotPassword({ email });
       setSuccess(true);
       toast("Instruksi telah dikirim ke email Anda");
     } catch (error: any) {

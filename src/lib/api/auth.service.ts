@@ -5,6 +5,8 @@ import type {
   User,
   LoginDto,
   RegisterDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
 } from "@/types/api.types";
 
 export const authService = {
@@ -37,13 +39,13 @@ export const authService = {
     return data.data;
   },
 
-  async forgotPassword(email: string) {
-    const { data } = await api.post<ApiResponse<void>>("/auth/forgot-password", { email });
+  async forgotPassword(dto: ForgotPasswordDto) {
+    const { data } = await api.post<ApiResponse<void>>("/auth/forgot-password", dto);
     return data;
   },
 
-  async resetPassword(token: string, newPassword: string) {
-    const { data } = await api.post<ApiResponse<void>>("/auth/reset-password", { token, newPassword });
+  async resetPassword(dto: ResetPasswordDto) {
+    const { data } = await api.post<ApiResponse<void>>("/auth/reset-password", dto);
     return data;
   },
 

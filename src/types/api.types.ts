@@ -95,6 +95,15 @@ export interface LoginDto {
   password: string;
 }
 
+export interface ForgotPasswordDto {
+  email: string;
+}
+
+export interface ResetPasswordDto {
+  token: string;
+  newPassword: string;
+}
+
 export interface CreateOrderDto {
   tableNumber: string;
   customerName: string;
