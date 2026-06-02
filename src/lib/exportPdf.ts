@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { toast } from "@/lib/toast";
 import type { Order } from "@/types/api.types";
 
 // ── Amara Color Palette ──────────────────────────────────────────────────────
@@ -269,10 +270,9 @@ export function exportMonthlySummaryPdf(orders: Order[], month: number, year: nu
 }
 
 /**
- * Generate and download a receipt/bill PDF for an individual order.
+ * Helper to draw a single order bill on the active page of the jsPDF instance.
  */
-export function exportSingleOrderBillPdf(order: any) {
-  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+function drawOrderBillPage(doc: jsPDF, order: any, pageIndex: number, totalOrders: number) {
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 20;
@@ -442,10 +442,55 @@ export function exportSingleOrderBillPdf(order: any) {
   doc.setFontSize(8);
   doc.setTextColor(...COLORS.muted);
   doc.text("Terima kasih atas kunjungan Anda di Amara Fine Dining.", margin, pageHeight - 7);
-  doc.text("Halaman 1 dari 1", pageWidth - margin, pageHeight - 7, { align: "right" });
+  doc.text(`Halaman ${pageIndex + 1} dari ${totalOrders}`, pageWidth - margin, pageHeight - 7, { align: "right" });
+}
+
+/**
+ * Generate and download a receipt/bill PDF for an individual order.
+ */
+export function exportSingleOrderBillPdf(order: any) {
+  const getOrderCode = (id: string) => `ORD-AMR-${id.slice(-4).toUpperCase()}`;
+  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  
+  drawOrderBillPage(doc, order, 0, 1);
 
   const filename = `Amara_Bill_${getOrderCode(order.id)}.pdf`;
   doc.save(filename);
+  toast(`Bill ${getOrderCode(order.id)} berhasil diunduh`);
+}
+
+/**
+ * Generate and download all bills for completed orders of the selected month/year in a single PDF (one page per bill).
+ */
+export function exportAllMonthlyBillsPdf(orders: Order[], month: number, year: number) {
+  // Filter completed orders for the selected month/year
+  const monthOrders = orders.filter((o) => {
+    if (!o.createdAt) return false;
+    const d = new Date(o.createdAt);
+    return (
+      d.getMonth() === month &&
+      d.getFullYear() === year &&
+      o.status === "COMPLETED"
+    );
+  });
+
+  if (monthOrders.length === 0) {
+    toast(`Tidak ada data penjualan selesai (COMPLETED) untuk periode ${MONTH_NAMES[month]} ${year}.`, "error");
+    return;
+  }
+
+  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+  monthOrders.forEach((order, idx) => {
+    if (idx > 0) {
+      doc.addPage();
+    }
+    drawOrderBillPage(doc, order, idx, monthOrders.length);
+  });
+
+  const filename = `Amara_Kumpulan_Bill_${MONTH_NAMES[month]}_${year}.pdf`;
+  doc.save(filename);
+  toast(`Berhasil mengunduh ${monthOrders.length} bill untuk periode ${MONTH_NAMES[month]} ${year}.`);
 }
 
 /**

@@ -15,7 +15,7 @@ import {
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { orderService } from "@/lib/api/order.service";
-import { exportMonthlySummaryPdf, exportMonthlyOrdersListPdf } from "@/lib/exportPdf";
+import { exportMonthlySummaryPdf, exportMonthlyOrdersListPdf, exportAllMonthlyBillsPdf } from "@/lib/exportPdf";
 import { toast } from "@/lib/toast";
 import type { Order } from "@/types/api.types";
 
@@ -42,7 +42,7 @@ export function AdminSidebar({
   const [showExport, setShowExport] = useState(false);
   const [exportMonth, setExportMonth] = useState(new Date().getMonth());
   const [exportYear, setExportYear] = useState(new Date().getFullYear());
-  const [exportType, setExportType] = useState<"summary" | "orders">("summary");
+  const [exportType, setExportType] = useState<"summary" | "orders" | "bills">("summary");
   const [exporting, setExporting] = useState(false);
 
   const handleExport = async () => {
@@ -75,8 +75,10 @@ export function AdminSidebar({
 
       if (exportType === "summary") {
         exportMonthlySummaryPdf(allOrders, exportMonth, exportYear);
-      } else {
+      } else if (exportType === "orders") {
         exportMonthlyOrdersListPdf(allOrders, exportMonth, exportYear);
+      } else {
+        exportAllMonthlyBillsPdf(allOrders, exportMonth, exportYear);
       }
       setShowExport(false);
     } catch (err) {
@@ -209,11 +211,12 @@ export function AdminSidebar({
                 </label>
                 <select
                   value={exportType}
-                  onChange={(e) => setExportType(e.target.value as "summary" | "orders")}
+                  onChange={(e) => setExportType(e.target.value as "summary" | "orders" | "bills")}
                   className="w-full rounded-lg border border-line bg-paper px-3 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   <option value="summary">Ringkasan Menu Terjual (Summary)</option>
                   <option value="orders">Daftar Transaksi Pesanan (Bill Bulanan)</option>
+                  <option value="bills">Kumpulan Struk/Bill Bulanan (Satu PDF)</option>
                 </select>
               </div>
 
@@ -266,10 +269,18 @@ export function AdminSidebar({
                         {MONTH_NAMES[exportMonth]} {exportYear}
                       </span>.
                     </>
-                  ) : (
+                  ) : exportType === "orders" ? (
                     <>
                       📄 Laporan akan mencakup: daftar seluruh transaksi pesanan selesai,
                       nomor meja, nama pelanggan, omset kotor, pajak restoran (10%), dan omset bersih untuk periode{" "}
+                      <span className="font-semibold text-ink">
+                        {MONTH_NAMES[exportMonth]} {exportYear}
+                      </span>.
+                    </>
+                  ) : (
+                    <>
+                      📄 Laporan akan mencakup: penggabungan seluruh struk/bill pesanan selesai
+                      dalam bentuk halaman-halaman struk di satu berkas PDF untuk periode{" "}
                       <span className="font-semibold text-ink">
                         {MONTH_NAMES[exportMonth]} {exportYear}
                       </span>.
