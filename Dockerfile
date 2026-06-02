@@ -14,6 +14,17 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 # Disable telemetry selama build
 ENV NEXT_TELEMETRY_DISABLED 1
+
+# Terima ARG dari Railway dan jadikan ENV agar Next.js bisa melihatnya saat build
+ARG NEXT_PUBLIC_API_BASE_URL
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
+ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
+
+ARG NEXT_PUBLIC_ENABLE_GOOGLE_AUTH
+ENV NEXT_PUBLIC_ENABLE_GOOGLE_AUTH=$NEXT_PUBLIC_ENABLE_GOOGLE_AUTH
+
 # Jalankan build Next.js (karena next.config.ts pakai output: standalone)
 RUN npm run build
 
