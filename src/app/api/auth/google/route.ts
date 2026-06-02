@@ -17,7 +17,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "idToken required" }, { status: 400 });
     }
 
-    // ── 1. Verifikasi token ke Google ────────────────────────────────────────
     const googleRes = await fetch(
       `https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`,
     );
@@ -33,13 +32,13 @@ export async function POST(req: NextRequest) {
       aud: string;
     };
 
-    // Pastikan token memang untuk client id ini
+
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     if (clientId && gUser.aud !== clientId) {
       return NextResponse.json({ error: "Token audience tidak cocok" }, { status: 401 });
     }
 
-    // ── 2. Coba kirim ke Amara backend ───────────────────────────────────────
+
     const apiBase =
       process.env.NEXT_PUBLIC_API_BASE_URL ??
       "https://amara-development.up.railway.app";
@@ -61,10 +60,9 @@ export async function POST(req: NextRequest) {
         }
       }
     } catch {
-      // Backend belum mendukung endpoint ini — lanjut ke fallback
     }
 
-    // ── 3. Fallback: kembalikan data dari Google langsung ────────────────────
+
     return NextResponse.json({
       source: "google",
       user: {
