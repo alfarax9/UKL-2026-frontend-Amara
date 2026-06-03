@@ -15,7 +15,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Amara — Fine Dining",
+  title: "Amara",
   description:
     "Where warmth is the finest luxury. Pesan menu Amara langsung dari meja Anda.",
   icons: {
