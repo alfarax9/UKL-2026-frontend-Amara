@@ -31,10 +31,12 @@ export default function LandingPage() {
     <>
       <TopAppBar variant="transparent" />
 
-      {/* Hero */}
+
       <section className="relative flex min-h-[760px] items-center justify-center overflow-hidden pt-20 lg:h-[913px]">
         <div className="absolute inset-0 bg-ink">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+
+
+
           <img
             src="/images/hero.png"
             alt=""
