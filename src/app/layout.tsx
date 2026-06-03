@@ -18,6 +18,13 @@ export const metadata: Metadata = {
   title: "Amara — Fine Dining",
   description:
     "Where warmth is the finest luxury. Pesan menu Amara langsung dari meja Anda.",
+  icons: {
+    icon: [
+      { url: "/icon.png", type: "image/png" },
+      { url: "/favicon.ico", type: "image/x-icon" },
+    ],
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({
